@@ -1,0 +1,2 @@
+PROJECT_NAME = "Buro REST API"
+VERSION = "0.1.0"

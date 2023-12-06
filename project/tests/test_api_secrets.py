@@ -48,17 +48,25 @@ class TestApiSecrets:
 
         secret_key = res_add.json()["secret_key"]
 
-        res_get = await client.get(
+        res_get_400 = await client.get(
+            app.url_path_for("api-secrets:get-secret", secret_key=secret_key),
+            params={"secret_phrase": "test"},
+        )
+
+        assert res_get_400.status_code == 400
+        assert res_get_400.json() == {"error": "Секретная фраза неверна"}
+
+        res_get_200 = await client.get(
             app.url_path_for("api-secrets:get-secret", secret_key=secret_key),
             params={"secret_phrase": data["secret_phrase"]},
         )
 
-        assert res_get.status_code == 200
-        assert res_get.json() == {"secret": data["secret"]}
+        assert res_get_200.status_code == 200
+        assert res_get_200.json() == {"secret": data["secret"]}
 
-        res_get2 = await client.get(
+        res_get_404 = await client.get(
             app.url_path_for("api-secrets:get-secret", secret_key=secret_key),
             params={"secret_phrase": data["secret_phrase"]},
         )
 
-        assert res_get2.status_code == 404
+        assert res_get_404.status_code == 404
